@@ -1,175 +1,257 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Áudio</title>
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.6.7/plyr.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <style>l
-    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
-      
-    body {
-      height: 100vh;
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
       overflow: hidden;
-      margin: 0px;
-    }    
+      font-family: Arial, Helvetica, sans-serif;
+      width: fit-content;
+    }
 
-    .audio-container {
+    .wa-audio {
+      width: fit-content;
+      height: 86px;
+      display: inline-flex;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 8px;
+      box-sizing: border-box;
+      padding: 14px 8px 14px 12px;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .wa-play {
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-left: 18px solid #4b5563;
+      margin-right: 11px;
+      flex: 0 0 auto;
+    }
+
+    .wa-play.playing {
+      width: 18px;
+      height: 24px;
+      border: none;
+      position: relative;
+      margin-right: 11px;
+    }
+
+    .wa-play.playing::before,
+    .wa-play.playing::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 6px;
+      height: 24px;
+      background: #4b5563;
+      border-radius: 2px;
+    }
+
+    .wa-play.playing::before {
+      left: 0;
+    }
+
+    .wa-play.playing::after {
+      right: 0;
+    }
+
+    .wa-middle {
+      width: 166px;
+      flex: 0 0 166px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-right: 2px;
+    }
+
+    .wa-wave-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-family: 'Open Sans', sans-serif;
-      justify-content: flex-start;
-      cursor: pointer; 
-      width: 100px;
+      gap: 7px;
+      height: 34px;
     }
 
-    .audio-container img {
-      width: 50px;
-      height: 50px;
+    .wa-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #0b8df6;
+      flex: 0 0 auto;
+    }
+
+    .wa-wave {
+      width: 138px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      overflow: hidden;
+      flex: 0 0 138px;
+    }
+
+    .wa-wave span {
+      width: 3px;
+      border-radius: 10px;
+      background: #c6ccd2;
+      display: block;
+      flex: 0 0 3px;
+    }
+
+    .wa-wave span.played {
+      background: #0b8df6;
+    }
+
+    .wa-duration {
+      margin-left: 20px;
+      margin-top: -2px;
+      font-size: 15px;
+      color: #4b5563;
+      line-height: 1;
+    }
+
+    .wa-avatar-wrap {
+      width: 56px;
+      height: 56px;
+      position: relative;
+      flex: 0 0 56px;
+      margin-left: 0;
+      transform: translateY(-4px);
+    }
+
+    .wa-avatar {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       object-fit: cover;
-      padding-right: 8px;
-      padding-left: 10px;
-    }
-
-    .audio-container .microphone-icon {
-      position: relative;
-      margin-left: -67px;
-      margin-bottom: -25px;
-      font-size: 22px;
-      color: #4ad954;
-    }
-
-    .audio-container .microphone-icon.blue {
-      color: #3db8ee;
-    }
-
-    .plyr--audio .plyr__control.plyr__tab-focus,
-    .plyr--audio .plyr__control:hover,
-    .plyr--audio .plyr__control[aria-expanded=false] {
-      background: rgba(0, 0, 0, 0);
-      background: var(--plyr-audio-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, rgba(0, 0, 0, 0))));
-      color: rgba(0, 0, 0, 0);
-      color: var(--plyr-audio-control-color-hover, #797979)
-    }
-
-    .plyr--audio .plyr__controls {
-      background: rgba(0, 0, 0, 0);
-      background: var(--plyr-audio-controls-background, rgba(0, 0, 0, 0));
-      border-radius: inherit;
-      color: #4a5464;
-      color: var(--plyr-audio-control-color,#4a5464);
-      margin-left: 0px;
-      padding: 0px;
-    }
-
-    .plyr--audio .plyr__control--overlaid .plyr__control__icon {
-      font-size: 33px;
-    }
-
-    .plyr--full-ui input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      border: 0;
-      border-radius: 100%;
-      box-shadow: 0 1px 1px rgba(35,40,47,.15),0 0 0 1px rgba(35,40,47,.2);
-      box-shadow: var(--plyr-range-thumb-shadow,0 1px 1px rgba(35,40,47,.15),0 0 0 1px rgba(35,40,47,.2));
-      height: 13px;
-      height: var(--plyr-range-thumb-height,13px);
-      margin-top: -4px;
-      margin-top: calc(var(--plyr-range-thumb-height,13px)/2*-1 - var(--plyr-range-track-height,5px)/2*-1);
-      position: relative;
-      -webkit-transition: all .2s ease;
-      transition: all .2s ease;
-      width: 13px;
-      width: var(--plyr-range-thumb-height,13px);
-      background: var(--range-thumb-background, #4ad954);
-    }  
-
-    .plyr--full-ui input[type=range].blue::-webkit-slider-thumb {
-      background: var(--range-thumb-background-active, #3db8ee);
-    }
-  
-    .hide {
-      display: none;
-    }
-
-    .plyr__controls .plyr__controls__item.plyr__progress__container:first-child,
-    .plyr__controls .plyr__controls__item.plyr__time+.plyr__time,
-    .plyr__controls .plyr__controls__item.plyr__time:first-child {
-      padding-left: 0;
       display: block;
-      margin-left: 7.5px;
     }
 
-    .plyr__time+.plyr__time:before {
-      content: "";
-      margin-right: var(--plyr-control-spacing);
+    .wa-mic {
+      position: absolute;
+      left: -7px;
+      bottom: -3px;
+      width: 23px;
+      height: 23px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 23px 23px;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%230b8df6' d='M12 14.25c1.66 0 3-1.34 3-3V6a3 3 0 0 0-6 0v5.25c0 1.66 1.34 3 3 3Zm5.3-3c0 3-2.54 5.1-5.3 5.1s-5.3-2.1-5.3-5.1H5c0 3.42 2.72 6.24 6.1 6.68V21h1.8v-3.07c3.38-.44 6.1-3.26 6.1-6.68h-1.7Z'/%3E%3C/svg%3E");
     }
 
-    .plyr--audio .plyr__controls .plyr__controls__item.plyr__time--current.hide,
-    .plyr--audio .plyr__controls .plyr__controls__item.plyr__time--duration.hide {
+    audio {
       display: none;
     }
-
   </style>
 </head>
+
 <body>
-  <div class="audio-container" id="audioContainer">
-    <!-- Cole o link do Seu áudio Abaixo-->
-    <audio class="plyr" src="https://minio-production-da8d.up.railway.app/typebot/public/workspaces/cmoogcv1g0001i3b8cyphdhvz/typebots/cmorqhb7o000bi3b8vr7ovyzg/blocks/tj160bzfkhclod5fyf0xegb5?v=1778686273289"></audio>
-    <!-- Cole o link da Sua imagem Abaixo-->
-    <img src="https://i.ibb.co/9dhxSqg/perfil-wpp.jpg" alt="Imagem">
-    <div class="microphone-icon">
-      <i class="fas fa-microphone"></i>
+  <div class="wa-audio" id="waAudioBox">
+
+    <!-- TROQUE AQUI O LINK DO ÁUDIO -->
+    <audio
+      id="waAudio"
+      preload="metadata"
+      src="https://minio-production-da8d.up.railway.app/typebot/public/workspaces/cmoogcv1g0001i3b8cyphdhvz/typebots/cmorqhb7o000bi3b8vr7ovyzg/blocks/tj160bzfkhclod5fyf0xegb5?v=1778686273289"
+    ></audio>
+    <!-- FIM DO LINK DO ÁUDIO -->
+
+    <div class="wa-play" id="waPlay"></div>
+
+    <div class="wa-middle">
+      <div class="wa-wave-row">
+        <div class="wa-dot"></div>
+
+        <div class="wa-wave" id="waWave">
+          <span style="height: 8px"></span>
+          <span style="height: 14px"></span>
+          <span style="height: 19px"></span>
+          <span style="height: 12px"></span>
+          <span style="height: 24px"></span>
+          <span style="height: 29px"></span>
+          <span style="height: 22px"></span>
+          <span style="height: 31px"></span>
+          <span style="height: 27px"></span>
+          <span style="height: 18px"></span>
+          <span style="height: 25px"></span>
+          <span style="height: 33px"></span>
+          <span style="height: 21px"></span>
+          <span style="height: 16px"></span>
+          <span style="height: 28px"></span>
+          <span style="height: 30px"></span>
+          <span style="height: 20px"></span>
+          <span style="height: 12px"></span>
+          <span style="height: 18px"></span>
+          <span style="height: 9px"></span>
+          <span style="height: 6px"></span>
+          <span style="height: 4px"></span>
+        </div>
+      </div>
+
+      <div class="wa-duration" id="waDuration">0:00</div>
+    </div>
+
+    <div class="wa-avatar-wrap">
+      <!-- TROQUE AQUI O LINK DA FOTO/AVATAR -->
+      <img class="wa-avatar" src="https://i.ibb.co/9dhxSqg/perfil-wpp.jpg" />
+      <!-- FIM DO LINK DA FOTO/AVATAR -->
+
+      <div class="wa-mic"></div>
     </div>
   </div>
-  
-  <script src="https://cdn.plyr.io/3.6.7/plyr.js"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const player = new Plyr('.plyr', {
-        controls: ['play', 'progress', 'current-time', 'duration']
+    const box = document.getElementById("waAudioBox");
+    const audio = document.getElementById("waAudio");
+    const play = document.getElementById("waPlay");
+    const duration = document.getElementById("waDuration");
+    const waveBars = Array.from(document.querySelectorAll("#waWave span"));
+
+    function formatTime(seconds) {
+      if (!isFinite(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    audio.addEventListener("loadedmetadata", () => {
+      duration.textContent = formatTime(audio.duration);
+    });
+
+    box.addEventListener("click", () => {
+      audio.paused ? audio.play() : audio.pause();
+    });
+
+    audio.addEventListener("play", () => {
+      play.classList.add("playing");
+    });
+
+    audio.addEventListener("pause", () => {
+      play.classList.remove("playing");
+    });
+
+    audio.addEventListener("ended", () => {
+      play.classList.remove("playing");
+      waveBars.forEach(bar => bar.classList.remove("played"));
+      duration.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      const progress = audio.duration ? audio.currentTime / audio.duration : 0;
+      const activeBars = Math.floor(progress * waveBars.length);
+
+      waveBars.forEach((bar, index) => {
+        bar.classList.toggle("played", index <= activeBars);
       });
 
-      const audioElement = document.querySelector('.plyr');
-      const currentTimeElement = document.querySelector('.plyr__time--current');
-      const durationElement = document.querySelector('.plyr__time--duration');
-      const microphoneIcon = document.querySelector('.microphone-icon');
-
-      currentTimeElement.classList.add('hide'); // Adiciona a classe 'hide' ao iniciar
-
-      audioElement.addEventListener('play', function() {
-        currentTimeElement.classList.remove('hide');
-        durationElement.classList.add('hide');
-        microphoneIcon.classList.add('blue'); // Adiciona a classe 'blue' para alterar a cor do ícone
-        audioElement.classList.add('blue'); // Adiciona a classe 'blue' para alterar o background do controle deslizante
-        audioElement.style.setProperty('--range-thumb-background', '#3db8ee');
-      });
-
-      audioElement.addEventListener('pause', function() {
-        currentTimeElement.classList.add('hide');
-        durationElement.classList.remove('hide');
-      });
-
-      const audioContainer = document.getElementById('audioContainer');
-      audioContainer.addEventListener('click', function() {
-        const playButton = audioContainer.querySelector('.plyr__controls button[data-plyr="play"]');
-        playButton.click();
-      });
-
-      const playPauseButton = document.getElementById('audioContainer').querySelector('.plyr__controls button[data-plyr="play"]');
-      const audioBox = document.querySelector('.audio-box');
-      playPauseButton.addEventListener('click', function() {
-        const playButton = audioContainer.querySelector('.plyr__controls button[data-plyr="play"]');
-        playButton.click();
-      });
-
-      audioBox.addEventListener('click', function(event) {
-        event.stopPropagation(); 
-        const playButton = audioContainer.querySelector('.plyr__controls button[data-plyr="play"]');
-        playButton.click();
-      });
+      duration.textContent = formatTime(audio.currentTime);
     });
   </script>
 </body>
