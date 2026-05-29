@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Áudio Replica</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #F7F8FF;
+      font-family: Arial, sans-serif;
+    }
+
+    .audio-container {
+      width: 283px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      padding-left: 14px;
+      box-sizing: border-box;
+      cursor: pointer;
+      user-select: none;
+      background: #F7F8FF;
+    }
+
+    .play-button {
+      width: 21px;
+      height: 26px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin: 0 13px 0 0;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .play-button::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 0;
+      height: 0;
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      border-left: 16px solid #4b5563;
+    }
+
+    .audio-container.playing .play-button::before {
+      border: none;
+      width: 6px;
+      height: 22px;
+      background: #4b5563;
+      box-shadow: 10px 0 0 #4b5563;
+      left: 1px;
+      top: 2px;
+    }
+
+    .progress-area {
+      width: 122px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .progress-bar {
+      width: 122px;
+      height: 5px;
+      background: #cfd5dc;
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 5px;
+      background: #4ad954;
+      border-radius: 999px;
+    }
+
+    .progress-thumb {
+      width: 18px;
+      height: 18px;
+      background: #4ad954;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translate(-50%, -50%);
+    }
+
+    .time {
+      font-size: 16px;
+      line-height: 16px;
+      color: #2d3748;
+      width: 47px;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .avatar-wrap {
+      width: 54px;
+      height: 54px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .profile {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .mic {
+      position: absolute;
+      left: -5px;
+      bottom: -2px;
+      font-size: 22px;
+      color: #4ad954;
+      line-height: 1;
+      background: #F7F8FF;
+      border-radius: 50%;
+    }
+
+    .audio-container.playing .progress-fill,
+    .audio-container.playing .progress-thumb {
+      background: #3db8ee;
+    }
+
+    .audio-container.playing .mic {
+      color: #3db8ee;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="audio-container" id="audioContainer">
+    <audio id="audio" preload="metadata" src="https://chatvirtualpro.online/tj160bzfkhclod5fyf0xegb5.mp3"></audio>
+
+    <button class="play-button" id="playButton" aria-label="Play"></button>
+
+    <div class="progress-area" id="progressArea">
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-thumb" id="progressThumb"></div>
+      </div>
+    </div>
+
+    <div class="time" id="time">00:03</div>
+
+    <div class="avatar-wrap">
+      <img class="profile" src="https://chatvirtualpro.online/perfil.jpg" alt="Perfil">
+      <div class="mic">
+        <i class="fa-solid fa-microphone"></i>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById("audioContainer");
+    const audio = document.getElementById("audio");
+    const playButton = document.getElementById("playButton");
+    const progressArea = document.getElementById("progressArea");
+    const progressBar = document.getElementById("progressBar");
+    const progressFill = document.getElementById("progressFill");
+    const progressThumb = document.getElementById("progressThumb");
+    const time = document.getElementById("time");
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return "00:00";
+
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+
+      return String(min).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+    }
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    container.addEventListener("click", toggleAudio);
+
+    playButton.addEventListener("click", function(event) {
+      event.stopPropagation();
+      toggleAudio();
+    });
+
+    audio.addEventListener("loadedmetadata", function() {
+      time.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("play", function() {
+      container.classList.add("playing");
+    });
+
+    audio.addEventListener("pause", function() {
+      container.classList.remove("playing");
+
+      if (audio.currentTime < audio.duration) {
+        time.textContent = formatTime(audio.duration);
+      }
+    });
+
+    audio.addEventListener("timeupdate", function() {
+      const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+
+      progressFill.style.width = percent + "%";
+      progressThumb.style.left = percent + "%";
+
+      if (!audio.paused) {
+        time.textContent = formatTime(audio.currentTime);
+      }
+    });
+
+    audio.addEventListener("ended", function() {
+      container.classList.remove("playing");
+
+      audio.currentTime = 0;
+      progressFill.style.width = "0%";
+      progressThumb.style.left = "0%";
+      time.textContent = formatTime(audio.duration);
+    });
+
+    progressArea.addEventListener("click", function(event) {
+      event.stopPropagation();
+
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const percent = Math.max(0, Math.min(1, clickX / rect.width));
+
+      audio.currentTime = percent * audio.duration;
+    });
+  </script>
+
+</body>
+</html>
